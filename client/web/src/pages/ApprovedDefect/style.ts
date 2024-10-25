@@ -1,30 +1,16 @@
 import styled from "styled-components";
 
 export const PageContainer = styled.div`
-    display: flex;
-    height: 100vh;
-    flex-direction: column;
-    margin-top: 50px;
-    margin-bottom: 80px;
-`;
-
-export const ContentArea = styled.div`
-    display: flex;
-    flex: 1;
-    margin-top: 50px;
+    padding: 20px;
+    margin-top: 100px;
     margin-left: 350px;
     margin-right: 50px;
-`;
-
-export const MainContent = styled.main`
-    flex: 1;
-    padding: 20px;
-    background-color: #fff;
 `;
 
 export const SearchContainer = styled.div`
     display: flex;
     justify-content: flex-end;
+    align-items: center;
     margin-bottom: 10px;
 `;
 
@@ -36,10 +22,10 @@ export const SearchInput = styled.input`
     border-radius: 4px;
 `;
 
-export const DefectTable = styled.table`
+export const Table = styled.table`
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
+    margin-top: 15px;
 
     th,
     td {
