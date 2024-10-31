@@ -31,7 +31,11 @@ public class AdminService {
 
     public List<MemberDocument> findJoinRequests(String username) {
         String apartmentName = memberRepository.findByUsername(username).getApartmentName();
-        return memberRepository.findByApartmentNameAndRole(apartmentName, Role.WAIT, Sort.by(Sort.Direction.DESC, "memberId"));
+        return memberRepository.findByApartmentNameAndRoleNotIn(
+                apartmentName,
+                List.of(Role.ADMIN, Role.SUPER_ADMIN),
+                Sort.by(Sort.Direction.DESC, "memberId")
+        );
     }
 
     public void approveJoinRequest(MemberDocument member) {

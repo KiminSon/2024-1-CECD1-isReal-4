@@ -13,7 +13,7 @@ public interface MemberRepository extends MongoRepository<MemberDocument, String
 
     MemberDocument findByUsername(String username);
 
-    List<MemberDocument> findByApartmentNameAndRole(String apartmentName, Role role, Sort sort);
+    List<MemberDocument> findByApartmentNameAndRoleNotIn(String apartmentName, List<Role> excludedRoles, Sort sort);
 
     boolean existsByUsername(String username);
 }
