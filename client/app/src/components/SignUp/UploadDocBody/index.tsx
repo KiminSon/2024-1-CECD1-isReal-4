@@ -1,27 +1,22 @@
 import { useState, ChangeEvent, MouseEvent } from "react";
 import * as Styled from "./style.ts";
 import { useNavigate } from "react-router-dom";
+import { useSignUpStore } from "@/stores/useSignUpStore.ts"
+import {postRegister} from "@/apis/auth";
 
 export default function UploadDocBody() {
     const navigate = useNavigate();
-
-    const [fileNames, setFileNames] = useState<string[]>([]);
+    const { username, password, memberName, phoneNumber, apartmentName, apartmentBuildingNumber, authDocument, setField } = useSignUpStore();
     const [isCheckboxChecked, setIsCheckboxChecked] = useState<boolean>(false);
     const [openSection, setOpenSection] = useState<number | null>(null);
+    const [fileName, setFileName] = useState<string>("");
 
-    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const files = event.target.files;
-        if (files) {
-            const newFileNames = Array.from(files).map((file) => file.name);
-            setFileNames(newFileNames);
-        }
-    };
 
     const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
         setIsCheckboxChecked(event.target.checked);
     };
 
-    const isButtonEnabled = fileNames.length > 0 && isCheckboxChecked;
+    const isButtonEnabled = !!authDocument && isCheckboxChecked;
 
     const toggleSection = (section: number) => {
         setOpenSection(openSection === section ? null : section);
@@ -32,9 +27,45 @@ export default function UploadDocBody() {
         toggleSection(section);
     };
 
-    const handleComplete = () => {
-        navigate("/home");
+    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64String = reader.result as string;
+                setField("authDocument", base64String);
+                setFileName(file.name);
+            };
+            reader.readAsDataURL(file);
+        }
     };
+
+    const handleComplete = async () => {
+        const jsonData = {
+            username,
+            password,
+            memberName,
+            phoneNumber,
+            apartmentName,
+            apartmentBuildingNumber,
+            authDocument,
+        };
+
+        try {
+            const response = await postRegister(jsonData);
+            if(response === 201) {
+                alert("회원가입이 완료되었습니다.");
+                navigate("/home");
+            } else {
+                alert("오류가 발생하였습니다.");
+                navigate("/");
+            }
+        } catch (error) {
+            console.error("Failed to register:", error);
+            alert("회원가입에 실패하였습니다.");
+        }
+    };
+
 
     return (
         <Styled.Container>
@@ -44,12 +75,12 @@ export default function UploadDocBody() {
                     <Styled.Input
                         type='file'
                         id='file-upload'
-                        accept='.pdf, .jpg' // 파일 형식 제한
+                        accept='.pdf, .jpg'
                         multiple
                         onChange={handleFileChange}
                     />
                     <Styled.InputLabel htmlFor='file-upload'>
-                        {fileNames.length > 0 ? fileNames.join(", ") : "인증 서류를 업로드해주세요."}
+                        {fileName ? fileName : "인증 서류를 업로드해주세요."}
                     </Styled.InputLabel>
                 </Styled.UploadWrapper>
                 <Styled.Description>

@@ -31,14 +31,10 @@ export const logout = async () => {
 }
 
 /**
- * @description 2-1. 이메일 검증하기 (Authentication Code) 발급
+ * @description 2-1. 이메일 중복확인
  */
 export const validateEmail = async (email: string) => {
-    const response = await publicInstance.post("/auth/validations/email", {
-        email: email,
-        is_duplicate_check: true,
-    });
-
+    const response = await publicInstance.get(`/all/is-exist-username?username=${encodeURIComponent(email)}`);
     return response.data;
 }
 
@@ -55,17 +51,29 @@ export const validateAuthCode = async (email: string, authenticationCode: string
 }
 
 /**
- * @description 2-3. 일반 회원가입
+ * @description 2-3. 회원가입
  */
-export const postRegister = async (data: { nickname: string, password: string, temporaryToken: string }) => {
-    const response = await authInstance.post("/auth/sign-up", {
-        nickname: data.nickname,
+export const postRegister = async (data: {
+    username: string;
+    password: string;
+    memberName: string;
+    phoneNumber: string;
+    apartmentName: string;
+    apartmentBuildingNumber: string;
+    authDocument: string | null;
+}) => {
+    const response = await publicInstance.post("/all/join-request", {
+        username: data.username,
         password: data.password,
-        temporary_token: data.temporaryToken,
+        memberName: data.memberName,
+        phoneNumber: data.phoneNumber,
+        apartmentName: data.apartmentName,
+        apartmentBuildingNumber: data.apartmentBuildingNumber,
+        authDocument: data.authDocument,
     });
 
-    return response.data;
-}
+    return response.status;
+};
 
 /**
  * @description 2-4. 회원 탈퇴
