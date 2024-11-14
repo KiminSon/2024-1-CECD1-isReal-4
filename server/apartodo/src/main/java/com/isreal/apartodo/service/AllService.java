@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -29,6 +30,7 @@ public class AllService {
     private final MemberRepository memberRepository;
     private final ApartmentRepository apartmentRepository;
     private final RejectionRepository rejectionRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public ResponseEntity<String> joinRequest(JoinRequestDTO joinRequestDTO) {
         if (memberRepository.existsByUsername(joinRequestDTO.getUsername())) {
@@ -37,7 +39,7 @@ public class AllService {
 
         MemberDocument memberDocument = MemberDocument.builder()
                 .username(joinRequestDTO.getUsername())
-                .password(joinRequestDTO.getPassword())
+                .password(passwordEncoder.encode(joinRequestDTO.getPassword()))
                 .role(Role.WAIT)
                 .memberName(joinRequestDTO.getMemberName())
                 .phoneNumber(joinRequestDTO.getPhoneNumber())
